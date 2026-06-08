@@ -17,6 +17,9 @@ class GPGLProtocol(DeviceProtocol):
     def move(self, x, y, z, absolute=True):
         self.write("%s%i,%i"%('D' if z else 'M', x, y))
 
+    def set_working_area(self, bounding_box):
+        pass
+
     def set_velocity(self, v):
         self.write('!%i' % v)
 

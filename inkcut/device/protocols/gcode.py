@@ -80,6 +80,9 @@ class GCodeProtocol(DeviceProtocol):
         line += "\n"
         self.write(line)
 
+    def set_working_area(self, bounding_box):
+        pass
+
     def set_force(self, f):
         raise NotImplementedError
         

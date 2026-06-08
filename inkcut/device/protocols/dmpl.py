@@ -35,6 +35,17 @@ class DMPLProtocol(DeviceProtocol):
         elif v == 6:
             self.write("IN;PA;")
 
+    def set_working_area(self, bounding_box):
+        # This is un-tested in DMPL, but this should be
+        # the correct command if anyone wants to test
+        # it and put it in here.
+        #x0 = int(self.scale * bounding_box["x0"])
+        #y0 = int(self.scale * bounding_box["y0"])
+        #x1 = int(self.scale * bounding_box["x1"])
+        #y1 = int(self.scale * bounding_box["y1"])
+        #self.write(" W %i,%i,%i,%i,%i,%i,%i,%i " % (x0, y0, x1, y1, x0, y0, x1, y1))
+        pass
+
     def move(self, x, y, z, absolute=True):
         x, y = int(x*self.scale), int(y*self.scale)
         v = self.config.mode

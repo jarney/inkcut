@@ -66,6 +66,12 @@ enamldef DeviceConfigView(Container):
                 CheckBox:
                     text = QApplication.translate("device", "Enabled")
                     checked := model.force_enabled
+
+                Label:
+                    text = QApplication.translate("device", "Device Clipping (if supported by device)")
+                CheckBox:
+                    text = QApplication.translate("device", "Enabled")
+                    checked := model.clip_output_to_page
         Page:
             closable = False
             title = QApplication.translate("device", "Output")

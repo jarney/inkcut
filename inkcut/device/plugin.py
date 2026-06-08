@@ -140,6 +140,15 @@ class DeviceProtocol(Model):
         """
         raise NotImplementedError
 
+    def set_working_area(self, working_area):
+        """ Set the working area for the device.
+         Parameters
+        ----------
+        working_area["x0"] Lower left x coordinate.
+        working_area["y0"] Lower left y coordinate.
+        working_area["x1"] Upper right x coordinate.
+        working_area["y1"] Upper right y coordinate.
+        """
     def set_pen(self, p):
         """ Set the pen or tool that should be used.
 
@@ -309,6 +318,11 @@ class DeviceConfig(Model):
     force = Float(40, strict=False).tag(config=True)
     force_units = Enum('g').tag(config=True)
     force_enabled = Bool().tag(config=True)
+
+    # Whether or not to send a 'window' command
+    # to the plotter causing it to clip the
+    # plot to the area of the page or device, whichever is smaller.
+    clip_output_to_page = Bool().tag(config = True)
 
     #: Use absolute coordinates
     absolute = Bool().tag(config=True)
@@ -792,6 +806,24 @@ class Device(Model):
                                                       config.commands_before)
 
                         self.status = "Working..."
+
+                        if config.clip_output_to_page:
+                            # Calculate the effective working area
+                            # and inform the device through the protocol
+                            # if it supports it.  Some protocols
+                            # may ignore this.
+                            x0 = self.job.material.padding_left
+                            y0 = self.job.material.padding_bottom
+                            x1 = min(self.job.material.width() - self.job.material.padding_right, self.area.width())
+                            y1 = min(self.job.material.height() - self.job.material.padding_top, self.area.height())
+                            working_area = {
+                                "x0": x0,
+                                "y0": y0,
+                                "x1": x1,
+                                "y1": y1
+                            }
+                            yield defer.maybeDeferred(
+                                protocol.set_working_area, working_area)
 
                         if config.force_enabled:
                             yield defer.maybeDeferred(
