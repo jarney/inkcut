@@ -19,7 +19,7 @@ from atom.api import (
     Dict, Callable, observe
 )
 from contextlib import contextmanager
-from enaml.qt.QtGui import QPainterPath, QTransform
+from enaml.qt.QtGui import QPainterPath, QTransform, QPolygonF
 from enaml.qt.QtCore import QPointF, QRectF
 from enaml.colors import ColorMember
 from inkcut.core.api import Model, AreaBase
@@ -163,6 +163,7 @@ class Job(Model):
     mirror = ContainerList(Bool(), default=[False, False]).tag(config=True)
     align_center = ContainerList(Bool(),
                                  default=[False, False]).tag(config=True)
+    clip_to_plot_area = Bool().tag(config = True)
 
     # Shifting of original file
     auto_shift = Bool(True).tag(config=True, help="shift to start at origin")
@@ -374,7 +375,7 @@ class Job(Model):
              'copy_spacing', 'copy_weedline', 'copy_weedline_padding',
              'plot_weedline', 'plot_weedline_padding', 'feed_to_end',
              'feed_after', 'material', 'material.size', 'material.padding',
-             'auto_copies', 'auto_shift')
+             'auto_copies', 'auto_shift', 'clip_to_plot_area')
     def update_document(self, change=None):
         """ Recreate an instance of of the plot using the current settings
 
@@ -475,6 +476,25 @@ class Job(Model):
             0, -self.feed_after + model.boundingRect().top())
                      if self.feed_to_end else QPointF(0, 0))
         model.moveTo(end_point)
+
+        if self.clip_to_plot_area:
+            clip_x0 = self.material.padding_left
+            clip_y0 = self.material.padding_bottom
+            clip_x1 = self.material.width() - self.material.padding_right
+            clip_y1 = self.material.height() - self.material.padding_top
+
+            clip_points = [
+                QPointF(clip_x0, -clip_y0),
+                QPointF(clip_x1, -clip_y0),
+                QPointF(clip_x1, -clip_y1),
+                QPointF(clip_x0, -clip_y1),
+                QPointF(clip_x0, -clip_y0)
+            ]
+            clip_polygon = QPolygonF(clip_points)
+            clip_path = QPainterPath()
+            clip_path.addPolygon(clip_polygon)
+
+            model = model.intersected(clip_path)
 
         return model
 

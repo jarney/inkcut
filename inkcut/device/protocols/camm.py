@@ -14,9 +14,6 @@ class CAMMGL1Protocol(DeviceProtocol):
     def move(self, x, y, z, absolute=True):
         self.write("{z}{x},{y};".format(x=x, y=y, z=z and "D" or "M", ))
         
-    def set_working_area(self, bounding_box):
-        pass
-
     def set_force(self, f):
         self.write("FS{f};".format(f=f))
         

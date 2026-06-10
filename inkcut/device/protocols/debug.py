@@ -7,6 +7,7 @@ Created on Oct 23, 2015
 from inkcut.device.plugin import DeviceProtocol
 from inkcut.core.utils import async_sleep, log
 
+
 class DebugProtocol(DeviceProtocol):
     """ A protocol that just logs what is called """
     def connection_made(self):
@@ -23,9 +24,6 @@ class DebugProtocol(DeviceProtocol):
     def set_velocity(self, v):
         log.debug("protocol.set_velocity({v})".format(v=v))
         
-    def set_working_area(self, bounding_box):
-        pass
-
     def set_force(self, f):
         log.debug("protocol.set_force({f})".format(f=f))
 

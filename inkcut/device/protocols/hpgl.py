@@ -41,13 +41,6 @@ class HPGLProtocol(DeviceProtocol):
         else:
             self.write('PR%i,%i;' % (x, y))
 
-    def set_working_area(self, bounding_box):
-        x0 = int(self.scale * bounding_box["x0"])
-        y0 = int(self.scale * bounding_box["y0"])
-        x1 = int(self.scale * bounding_box["x1"])
-        y1 = int(self.scale * bounding_box["y1"])
-        self.write("IW%i,%i,%i,%i;" % (x0, y0, x1, y1))
-
     def set_force(self, f):
         self.write("FS%i; " % f)
         
